@@ -1,0 +1,95 @@
+﻿@{
+    Page.Title = "Escriba el título aquí";
+    //Layout = "Su página de diseño se incluye aquí";
+
+    List<Popular> ListaPopular = new List<Popular>();
+    string messageError="";
+    if (IsPost)
+    {
+
+        Popular popularBase = new Popular();
+
+
+        //string palabra=popularBase.ValidarNumero(Request["numeros"]);
+
+
+        try
+        {
+            string[] numero = Request["numeros"].Split(',');
+            for (int i = 0; i < numero.Length; i++)
+            {
+                Popular popular = new Popular();
+
+                Popular buscarObj = new Popular();
+                buscarObj = ListaPopular.Find(p => p.Numero == int.Parse(numero[i]));
+
+                if (buscarObj == null)
+                {
+                    Popular popularNuevo = new Popular(1);
+                    popularNuevo.Numero = int.Parse(numero[i]);
+                    ListaPopular.Add(popularNuevo);
+                }
+                else
+                {
+                    buscarObj.Cantidad = buscarObj.Cantidad + 1;
+                    ListaPopular.Find(p => p.Numero == buscarObj.Numero).Cantidad = buscarObj.Cantidad;
+                }
+
+            }
+
+            //ordenar lista y filtrar la lista por cantidad mayor
+
+            ListaPopular = ListaPopular.OrderByDescending(o => o.Cantidad).ToList();
+
+            Popular mayor = new Popular();
+            mayor = ListaPopular.First();//primer elemento de la lista, que posee la cantidad mayor.
+
+            ListaPopular = ListaPopular.FindAll(o => o.Cantidad == mayor.Cantidad).ToList();
+
+
+            var secondFiveItems = ListaPopular.Take(2);
+        }
+
+
+        catch (Exception ex)
+        {
+
+            messageError = ex.Message;
+        }
+
+
+
+
+    }
+}
+
+
+<form action="#" method="post">
+    <h2>Calculo de número popular</h2>
+    <div class="form-group">
+        <label class="control-label">Ingrese números:</label>
+        <input type="text" class="form-control" name="numeros" placeholder="Ejemplo:1,2,3">
+    </div>
+
+    <button type="submit" class="btn ">Calcular Popular</button>
+</form>
+
+
+<h1>@messageError</h1>
+
+<table style="width:100%" border="1">
+
+    <tr>
+        <td>Numero</td>
+        <td>Cantidad</td>
+
+    </tr>
+    @foreach (var item in ListaPopular)
+    {
+        <tr>
+            <td>@item.Numero</td>
+            <td>@item.Cantidad</td>
+        </tr>
+    }
+
+</table>
