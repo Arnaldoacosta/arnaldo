@@ -1,5 +1,4 @@
-//$(document).ready(function () {
-    alert('hola');
+
     var motos = [];
 
 //objeto Moto brava
